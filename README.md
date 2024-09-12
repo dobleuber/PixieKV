@@ -22,11 +22,13 @@ We want to persist the store to disk to allow for long term storage of the store
 ```rust
 use pixiekv::PixieKV;
 
-let mut store = PixieKV::new();
+let mut store = PixieKV::default();
 
-store.set("key", "value");
+store.insert("key", "value");
 
 let value = store.get("key");
+
+store.remove("key");
 ```
 
 ## Run tests
