@@ -1,22 +1,23 @@
 use heapless::FnvIndexMap as IndexMap;
-use heapless::{String, Vec};
+use heapless::String;
 use serde::{Serialize, Deserialize};
-use postcard::{from_bytes, to_vec};
 
 use core::result::Result;
 
 use crate::domain::{
     database::Database,
-    persistent::Persistent,
+    constants::{MAX_SIZE, MAX_KEY_LEN},
 };
-
-const MAX_SIZE: usize = 1024;
-const MAX_KEY_LEN: usize = 128;
-const DB_FILE_PATH: &str = "./db.bin";
 
 #[derive(Serialize, Deserialize)]
 pub struct EmbeddedDatabase<T: Sized> {
     data: IndexMap<String<MAX_KEY_LEN>, T, MAX_SIZE>,
+}
+
+impl<T: Sized + PartialEq  + core::cmp::Eq> PartialEq for EmbeddedDatabase<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.data == other.data
+    }
 }
 
 impl<T: Sized> Default for EmbeddedDatabase<T> {

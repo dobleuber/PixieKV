@@ -4,6 +4,8 @@
 
 - [x] Set and get values
 - [x] Delete values
+- [x] Save and load from file
+- [x] Check the database integrity by validating the hash of the data
 
 ## Implementation
 
