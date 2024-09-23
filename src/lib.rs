@@ -1,9 +1,6 @@
 #![cfg_attr(not(test), no_std)]
 
-extern crate alloc;
-
 mod domain;
-
 use domain::{embedded_database::EmbeddedDatabase, database::Database};
 
 pub struct PixieKV<T: Sized> {

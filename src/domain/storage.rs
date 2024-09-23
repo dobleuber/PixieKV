@@ -1,7 +1,16 @@
 use littlefs2::{consts, driver, io};
 
+use crate::domain::constants::MAX_SIZE;
 pub struct KVStorage {
-    data: [u8; 1024 * 1024], // 1MB de almacenamiento
+    data: [u8; MAX_SIZE], // 1MB de almacenamiento
+}
+
+impl KVStorage {
+    pub fn new() -> Self {
+        Self {
+            data:  [0xFFu8; MAX_SIZE],
+        }
+    }
 }
 
 impl driver::Storage for KVStorage {
