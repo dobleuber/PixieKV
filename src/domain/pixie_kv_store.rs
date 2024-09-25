@@ -3,30 +3,30 @@ use serde::{Serialize, Deserialize};
 use core::result::Result;
 
 use crate::domain::{
-    database::PixieKV,
+    pixie_kv::PixieKV,
     constants::{MAX_SIZE, MAX_KEY_LEN},
 };
 
 #[derive(Serialize, Deserialize)]
-pub struct EmbeddedDatabase<T: Sized> {
+pub struct PixieKVStore<T: Sized> {
     data: IndexMap<String<MAX_KEY_LEN>, T, MAX_SIZE>,
 }
 
-impl<T: Sized + PartialEq  + core::cmp::Eq> PartialEq for EmbeddedDatabase<T> {
+impl<T: Sized + PartialEq  + core::cmp::Eq> PartialEq for PixieKVStore<T> {
     fn eq(&self, other: &Self) -> bool {
         self.data == other.data
     }
 }
 
-impl<T: Sized> Default for EmbeddedDatabase<T> {
+impl<T: Sized> Default for PixieKVStore<T> {
     fn default() -> Self {
-        EmbeddedDatabase {
+        PixieKVStore {
             data: IndexMap::default(),
         }
     }
 }
 
-impl<T: Sized> PixieKV<T> for EmbeddedDatabase<T> {
+impl<T: Sized> PixieKV<T> for PixieKVStore<T> {
     fn insert(&mut self, key: &str, value: T) -> Result<(), &'static str> {
         let heapless_key = String::<MAX_KEY_LEN>::try_from(key)
             .map_err(|_| "Key too long")?;
@@ -53,20 +53,20 @@ mod tests {
     use super::*;
     use littlefs2::fs::{Allocation, Filesystem};
     use serde::{Serialize, Deserialize};
-    use crate::domain::embedded_database::EmbeddedDatabase;
+    use crate::domain::pixie_kv_store::PixieKVStore;
     use crate::domain::storage::KVStorage;
     use crate::domain::persistent::Error;
 
     #[test]
     fn test_insert() {
-        let mut db = EmbeddedDatabase::default();
+        let mut db = PixieKVStore::default();
         db.insert("key1", "value1").unwrap();
         assert_eq!(db.get("key1"), Ok(Some(&"value1")));
     }
 
     #[test]
     fn test_remove() {
-        let mut db = EmbeddedDatabase::default();
+        let mut db = PixieKVStore::default();
         db.insert("key1", "value1").unwrap();
         assert_eq!(db.remove("key1"), Ok(Some("value1")));
         assert_eq!(db.get("key1"), Ok(None));
@@ -74,14 +74,14 @@ mod tests {
 
     #[test]
     fn test_key_too_long() {
-        let mut db = EmbeddedDatabase::default();
+        let mut db = PixieKVStore::default();
         let long_key = "a".repeat(MAX_KEY_LEN + 1);
         assert_eq!(db.insert(&long_key, "value1"), Err("Key too long"));
     }
 
     #[test]
     fn test_database_full() {
-        let mut db = EmbeddedDatabase::default();
+        let mut db = PixieKVStore::default();
         for i in 0..MAX_SIZE {
             let key = format!("key{}", i);
             assert!(db.insert(&key, i).is_ok());
@@ -91,7 +91,7 @@ mod tests {
 
     #[test]
     fn test_get_nonexistent_key() {
-        let db: EmbeddedDatabase<i32> = EmbeddedDatabase::default();
+        let db: PixieKVStore<i32> = PixieKVStore::default();
         assert_eq!(db.get("nonexistent"), Ok(None));
     }
 
@@ -100,9 +100,9 @@ mod tests {
         pub data: u32,
     }
 
-    impl EmbeddedDatabase<TestValue> {
+    impl PixieKVStore<TestValue> {
         pub fn new() -> Self {
-            EmbeddedDatabase::default()
+            PixieKVStore::default()
         }
     }
 
@@ -114,16 +114,16 @@ mod tests {
         let alloc = &mut Allocation::new();
         let mut fs = Filesystem::mount(alloc, &mut storage).unwrap();
 
-        let mut db = EmbeddedDatabase::<TestValue>::new();
+        let mut db = PixieKVStore::<TestValue>::new();
 
         db.insert("key1", TestValue { data: 100 }).unwrap();
         db.insert("key2", TestValue { data: 200 }).unwrap();
 
         db.save_to_file(&mut fs, "dbfile\0").unwrap();
 
-        println!("Size of EmbeddedDatabase<TestValue>: {} bytes", std::mem::size_of::<EmbeddedDatabase<TestValue>>());
+        println!("Size of EmbeddedDatabase<TestValue>: {} bytes", std::mem::size_of::<PixieKVStore<TestValue>>());
 
-        let loaded_db = EmbeddedDatabase::<TestValue>::load_from_file(&mut fs, "dbfile\0").unwrap();
+        let loaded_db = PixieKVStore::<TestValue>::load_from_file(&mut fs, "dbfile\0").unwrap();
 
         let value1 = loaded_db.get("key1").unwrap().unwrap();
         let value2 = loaded_db.get("key2").unwrap().unwrap();
@@ -148,7 +148,7 @@ mod tests {
         Filesystem::format(&mut storage).unwrap();
         let mut fs = Filesystem::mount(alloc, &mut storage).unwrap();
 
-        let result = EmbeddedDatabase::<TestValue>::load_from_file(&mut fs, "nonexistent\0");
+        let result = PixieKVStore::<TestValue>::load_from_file(&mut fs, "nonexistent\0");
 
         assert!(matches!(result, Err(Error::FileRead)));
     }

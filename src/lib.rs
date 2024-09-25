@@ -1,15 +1,15 @@
 #![cfg_attr(not(test), no_std)]
 
-mod domain;
-use domain::embedded_database::EmbeddedDatabase;
-
-pub type PixieKVStore<T> = EmbeddedDatabase<T>;
+pub mod domain;  
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    use domain::database::PixieKV;
+    use domain::{
+        pixie_kv::PixieKV,
+        pixie_kv_store::PixieKVStore,
+    };
 
     #[test]
     fn test_insert() {

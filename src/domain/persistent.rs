@@ -3,7 +3,7 @@ use postcard::{to_slice, from_bytes};
 use serde::{Serialize, de::DeserializeOwned};
 
 use crate::domain::{
-    embedded_database::EmbeddedDatabase,
+    pixie_kv_store::PixieKVStore,
     storage::KVStorage,
     constants::MAX_SIZE,
 };
@@ -16,7 +16,7 @@ pub enum Error {
     FileRead,
 }
 
-impl<T: Serialize + DeserializeOwned> EmbeddedDatabase<T> {
+impl<T: Serialize + DeserializeOwned> PixieKVStore<T> {
     pub fn save_to_file(&self, fs: &mut Filesystem<KVStorage>, filename: &str) -> Result<(), Error> {
         let mut buffer = [0u8; MAX_SIZE];
         
