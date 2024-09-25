@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 use core::result::Result;
 
 use crate::domain::{
-    database::Database,
+    database::PixieKV,
     constants::{MAX_SIZE, MAX_KEY_LEN},
 };
 
@@ -27,7 +27,7 @@ impl<T: Sized> Default for EmbeddedDatabase<T> {
     }
 }
 
-impl<T: Sized> Database<T> for EmbeddedDatabase<T> {
+impl<T: Sized> PixieKV<T> for EmbeddedDatabase<T> {
     fn insert(&mut self, key: &str, value: T) -> Result<(), &'static str> {
         let heapless_key = String::<MAX_KEY_LEN>::try_from(key)
             .map_err(|_| "Key too long")?;
@@ -57,7 +57,6 @@ mod tests {
     use crate::domain::embedded_database::EmbeddedDatabase;
     use crate::domain::storage::KVStorage;
     use crate::domain::persistent::Error;
-    use crate::domain::database::Database;
 
     #[test]
     fn test_insert() {
