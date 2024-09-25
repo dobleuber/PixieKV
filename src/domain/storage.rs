@@ -1,8 +1,9 @@
 use littlefs2::{consts, driver, io};
 
 use crate::domain::constants::MAX_SIZE;
+
 pub struct KVStorage {
-    data: [u8; MAX_SIZE], // 1MB de almacenamiento
+    data: [u8; MAX_SIZE], // 1MB of storage
 }
 
 impl KVStorage {
@@ -13,13 +14,19 @@ impl KVStorage {
     }
 }
 
+impl Default for KVStorage {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl driver::Storage for KVStorage {
     const READ_SIZE: usize = 16;
     const WRITE_SIZE: usize = 16;
     const BLOCK_SIZE: usize = 512;
-    const BLOCK_COUNT: usize = 2048; // 1MB / 512B = 2048 bloques
-    type CACHE_SIZE = consts::U256; // Aumentado para mejor rendimiento
-    type LOOKAHEAD_SIZE = consts::U32; // Aumentado para mejor rendimiento
+    const BLOCK_COUNT: usize = 2048; // 1MB / 512B = 2048 blocks
+    type CACHE_SIZE = consts::U256; // Increased for better performance
+    type LOOKAHEAD_SIZE = consts::U32; // Increased for better performance
 
     fn read(&mut self, offset: usize, buffer: &mut [u8]) -> io::Result<usize> {
         if offset + buffer.len() > self.data.len() {

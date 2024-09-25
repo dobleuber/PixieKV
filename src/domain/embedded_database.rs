@@ -1,6 +1,5 @@
 use heapless::{String, FnvIndexMap as IndexMap};
 use serde::{Serialize, Deserialize};
-
 use core::result::Result;
 
 use crate::domain::{
@@ -101,7 +100,6 @@ mod tests {
         pub data: u32,
     }
 
-    // Implementamos EmbeddedDatabase para TestValue
     impl EmbeddedDatabase<TestValue> {
         pub fn new() -> Self {
             EmbeddedDatabase::default()
@@ -110,33 +108,23 @@ mod tests {
 
     #[test]
     fn test_save_and_load() {
-        // Creamos un almacenamiento en RAM para simular el KVStorage
         let mut storage = KVStorage::new();
-
-        // Formateamos el sistema de archivos
         Filesystem::format(&mut storage).unwrap();
 
-
-        // Montamos el sistema de archivos
         let alloc = &mut Allocation::new();
         let mut fs = Filesystem::mount(alloc, &mut storage).unwrap();
 
-        // Creamos una instancia de EmbeddedDatabase
         let mut db = EmbeddedDatabase::<TestValue>::new();
 
-        // Insertamos datos en la base de datos
         db.insert("key1", TestValue { data: 100 }).unwrap();
         db.insert("key2", TestValue { data: 200 }).unwrap();
 
-        // Guardamos la base de datos en un archivo
         db.save_to_file(&mut fs, "dbfile\0").unwrap();
 
         println!("Size of EmbeddedDatabase<TestValue>: {} bytes", std::mem::size_of::<EmbeddedDatabase<TestValue>>());
 
-        // Creamos una nueva instancia de la base de datos cargada desde el archivo
         let loaded_db = EmbeddedDatabase::<TestValue>::load_from_file(&mut fs, "dbfile\0").unwrap();
 
-        // Verificamos que los datos sean consistentes
         let value1 = loaded_db.get("key1").unwrap().unwrap();
         let value2 = loaded_db.get("key2").unwrap().unwrap();
 
@@ -146,10 +134,7 @@ mod tests {
 
     #[test]
     fn test_save_to_file_error() {
-        // Creamos un almacenamiento en RAM
         let mut storage = KVStorage::new();
-
-        // Montamos el sistema de archivos sin formatear para provocar un error
         let alloc = &mut Allocation::new();
         let fs_result = Filesystem::mount(alloc, &mut storage);
 
@@ -158,15 +143,11 @@ mod tests {
 
     #[test]
     fn test_load_from_file_error() {
-        // Creamos un almacenamiento en RAM
         let mut storage = KVStorage::new();
-
-        // Formateamos y montamos el sistema de archivos
         let alloc = &mut Allocation::new();
         Filesystem::format(&mut storage).unwrap();
         let mut fs = Filesystem::mount(alloc, &mut storage).unwrap();
 
-        // Intentamos cargar desde un archivo que no existe
         let result = EmbeddedDatabase::<TestValue>::load_from_file(&mut fs, "nonexistent\0");
 
         assert!(matches!(result, Err(Error::FileRead)));
