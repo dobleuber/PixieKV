@@ -25,8 +25,8 @@ impl driver::Storage for KVStorage {
     const WRITE_SIZE: usize = 16;
     const BLOCK_SIZE: usize = 512;
     const BLOCK_COUNT: usize = 2048; // 1MB / 512B = 2048 blocks
-    type CACHE_SIZE = consts::U256; // Increased for better performance
-    type LOOKAHEAD_SIZE = consts::U32; // Increased for better performance
+    type CACHE_SIZE = consts::U32; // Increased for better performance
+    type LOOKAHEAD_SIZE = consts::U1; // Increased for better performance
 
     fn read(&mut self, offset: usize, buffer: &mut [u8]) -> io::Result<usize> {
         if offset + buffer.len() > self.data.len() {
