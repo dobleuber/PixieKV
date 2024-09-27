@@ -1,6 +1,7 @@
 use littlefs2::{fs::Filesystem, path::Path};
 use postcard::{to_slice, from_bytes};
 use serde::{Serialize, de::DeserializeOwned};
+use core::result::Result;
 
 use crate::domain::{
     pixie_kv_store::PixieKVStore,

@@ -8,7 +8,17 @@ heapless = { version = "0.8.0", features = ["serde"]}
 serde = {version = "1.0", default-features = false, features = ["derive"]}
 postcard = "1.0.2"
 littlefs2 = { version = "0.4.0" , features = ["ll-assertions", "ll-trace"]}
+cortex-m = "0.6.0"
+cortex-m-rt = "0.6.10"
+cortex-m-semihosting = "0.3.3"
+panic-halt = "0.2.0"
 
+[build-dependencies]
+
+[[bin]]
+name = "pixie_kv"
+test = false
+bench = false
 
 [[example]]
 name = "std_example"
