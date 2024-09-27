@@ -1,21 +1,23 @@
-# This is a simple key-value store written in Rust. It is designed to be a drop-in replacement for Redis.
+# PixieKV: A Simple Key-Value Store in Rust
+
+PixieKV is a lightweight, no_std compatible key-value store written in Rust. It is designed to be a simple and efficient storage solution for embedded systems and other resource-constrained environments.
 
 ## Features
 
 - [x] Set and get values
 - [x] Delete values
+- [x] Save and load from file
+- [x] No_std compatible
+- [x] Persistent storage using LittleFS
+- [x] Generic value types (supports any type that implements Serialize and Deserialize)
+- [x] Fixed-size storage with compile-time checks
+- [x] Check the database integrity by validating the hash of the data
 
 ## Implementation
 
-The store is implemented as a Rust `HashMap` that is stored in a `BTreeMap`. This allows for fast lookups and inserts.
+PixieKV is implemented using a `heapless::FnvIndexMap` as the underlying data structure. This allows for efficient lookups and inserts while maintaining a fixed-size storage that's suitable for embedded systems.
 
-The store is designed to be a drop-in replacement for Redis. It is not designed to be a high-performance store. It is designed to be a simple store that can be used to store and retrieve values.
-
-The store is designed to be a simple store that can be used to store and retrieve values.
-
-In the future it will change to a B+Tree to allow for range queries on keys.
-
-We want to persist the store to disk to allow for long term storage of the store.
+The key-value store is designed to be simple, efficient, and easy to use in no_std environments. It uses the LittleFS file system for persistent storage, allowing data to be saved and loaded from flash memory or other storage mediums.
 
 ## Usage
 
@@ -29,6 +31,10 @@ store.insert("key", "value");
 let value = store.get("key");
 
 store.remove("key");
+
+store.save_to_file("database.db");
+
+let loaded_store = PixieKV::load_from_file("database.db");
 ```
 
 ## Run tests
