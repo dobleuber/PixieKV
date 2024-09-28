@@ -11,7 +11,7 @@ PixieKV is a lightweight, no_std compatible key-value store written in Rust. It 
 - [x] Persistent storage using LittleFS
 - [x] Generic value types (supports any type that implements Serialize and Deserialize)
 - [x] Fixed-size storage with compile-time checks
-- [x] Check the database integrity by validating the hash of the data
+- [] Check the database integrity by validating the hash of the data
 
 ## Implementation
 
