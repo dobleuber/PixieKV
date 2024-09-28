@@ -43,6 +43,18 @@ let loaded_store = PixieKV::load_from_file("database.db");
 cargo test
 ```
 
+## Run examples
+
+```sh
+cargo run --example std_example
+```
+
+## Run emulated tests
+
+```sh
+cargo run --target thumbv7m-none-eabi --release
+```
+
 ## License
 
 MIT
