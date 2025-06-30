@@ -11,7 +11,7 @@ PixieKV is a lightweight, no_std compatible key-value store written in Rust. It 
 - [x] Persistent storage using LittleFS
 - [x] Generic value types (supports any type that implements Serialize and Deserialize)
 - [x] Fixed-size storage with compile-time checks
-- [ ] Check the database integrity by validating the hash of the data
+- [x] Database integrity validation using CRC32 hashing
 
 ## Implementation
 
@@ -35,6 +35,77 @@ store.remove("key");
 store.save_to_file("database.db");
 
 let loaded_store = PixieKV::load_from_file("database.db");
+```
+
+## Prerequisites
+
+### Installing QEMU
+
+For running emulated tests on ARM Cortex-M targets, you need to install QEMU:
+
+#### **Ubuntu/Debian Linux**
+```bash
+sudo apt update
+sudo apt install qemu-system-arm
+```
+
+#### **macOS**
+Using Homebrew:
+```bash
+brew install qemu
+```
+
+Using MacPorts:
+```bash
+sudo port install qemu
+```
+
+#### **Windows**
+1. Download QEMU from the official website: https://www.qemu.org/download/#windows
+2. Run the installer and follow the installation wizard
+3. Add QEMU to your system PATH:
+   - Open "Environment Variables" in System Properties
+   - Add the QEMU installation directory (usually `C:\Program Files\qemu`) to the PATH variable
+
+Alternatively, using Chocolatey:
+```powershell
+choco install qemu
+```
+
+Or using Scoop:
+```powershell
+scoop install qemu
+```
+
+### ARM GNU Toolchain
+Install the ARM cross-compilation toolchain:
+
+#### **Ubuntu/Debian Linux**
+```bash
+sudo apt update
+sudo apt install gcc-arm-none-eabi
+```
+
+#### **macOS**
+Using Homebrew:
+```bash
+brew install arm-none-eabi-gcc
+```
+
+#### **Windows**
+1. Download ARM GNU Toolchain from: https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
+2. Install the "arm-none-eabi" variant for your Windows version
+3. Add the toolchain `bin` directory to your system PATH (usually `C:\Program Files (x86)\Arm GNU Toolchain arm-none-eabi\<version>\bin`)
+
+Alternatively, using Chocolatey:
+```powershell
+choco install gcc-arm-embedded
+```
+
+### Rust ARM Target
+Install the ARM Cortex-M target for Rust:
+```bash
+rustup target add thumbv7m-none-eabi
 ```
 
 ## Run tests
